@@ -1,15 +1,12 @@
 #!/bin/env bash
 
-# Load Config
-source ./pve.conf
-
 func_change_vm_status () {
-    curl --silent --insecure --header "Authorization: PVEAPIToken=$(<token)" -X POST \
+    curl --silent --insecure --header "Authorization: PVEAPIToken=$(<$TOKEN)" -X POST \
         $URL/api2/json/nodes/$NODE/qemu/$VM/status/$CMD
 }
 
 func_get_vm_status () {
-    curl --silent --insecure --header "Authorization: PVEAPIToken=$(<token)" \
+    curl --silent --insecure --header "Authorization: PVEAPIToken=$(<$TOKEN)" \
         $URL/api2/json/nodes/$NODE/qemu/$VM/status/current \
         | jq --raw-output '.data.status'
 }
@@ -21,8 +18,16 @@ usage () {
     echo "<NODE>: Name of the PVE Node e.g. PVE01"
 }
 
+CWD="$( cd "$( dirname "$0" )" && pwd)"
+
 VM=""
 CMD=""
+
+TOKEN=$CWD/token
+
+# Load Config
+source $CWD/pve.conf
+
 
 if [ $# -lt 2 ]; then
     echo "Not enough arguments!"
